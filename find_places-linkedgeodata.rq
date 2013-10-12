@@ -1,0 +1,29 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix dbp: <http://dbpedia.org/ontology/>
+prefix lgdo: <http://linkedgeodata.org/ontology/>
+
+construct {
+
+    ?place a ?type;
+        owl:sameAs ?geoplace, ?dbplace;
+        geo:lat ?lat; geo:long ?long .
+
+} where {
+
+    ?place a dbp:PopulatedPlace;
+        rdfs:label ?cityLabel .
+    service <http://linkedgeodata.org/sparql> {
+
+        ?geoplace a ?type; rdfs:label ?cityLabel .
+        FILTER(?type in (lgdo:City, lgdo:Town, lgdo:Village))
+        ?geoplace geo:lat ?lat; geo:long ?long .
+        optional {
+            ?geoplace owl:sameAs ?dbplace .
+            #FILTER(strstarts(str(?dbplace), "http://dbpedia.org/"))
+        }
+
+    }
+
+}
